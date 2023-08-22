@@ -8,26 +8,19 @@
 
 validate_series(){
 
-local a="$1"
+	local a="$1"
+	local result=true
+	local ret_status=0
+	local int_re="^[+]?([1-9][0-9]*|0)$"
 
-local b=${@}
-loacl c=$#
-
-local result=true
-local ret_status=0
-local int_re="^[+]?([1-9][0-9]*|0)$"
-
-for
+		   
+	if [[ ! "${a[@]}" =~ $int_re ]]; then
+	    result=false
+	fi
+		    
+	echo "$result"
 	    
-if [[ ! "${b[@]}" =~ $int_re || ! "${a[@]}" =~ $int_re ]]; then
-    result=false
-fi
-	    
-echo "$result"
-	    
-return $ret_status
 }
-
 
 function get_array()
 {
@@ -43,8 +36,6 @@ function get_array()
 	
 	return $ret_status
 }
-
-
 
 --------------------------------------------------------------
 sort() {

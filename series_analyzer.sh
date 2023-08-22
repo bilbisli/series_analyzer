@@ -3,6 +3,74 @@
 
 ###########↓yoni↓###########
 
+#validation
+
+
+validate_series(){
+
+local a="$1"
+
+local b=${@}
+loacl c=$#
+
+local result=true
+local ret_status=0
+local int_re="^[+]?([1-9][0-9]*|0)$"
+
+for
+	    
+if [[ ! "${b[@]}" =~ $int_re || ! "${a[@]}" =~ $int_re ]]; then
+    result=false
+fi
+	    
+echo "$result"
+	    
+return $ret_status
+}
+
+
+function get_array()
+{
+	local -n arr="$1"
+	local input_arr=()
+	local ret_status=0
+	
+	if [[ "${#arr[@]}" -eq 0 ]]; then
+		read -p "Enter a series (atleast 3 positive numbers separated by spaces): " input_arr
+		arr+=${input_arr}
+	fi
+		
+	
+	return $ret_status
+}
+
+
+
+--------------------------------------------------------------
+sort() {
+
+local arr=($1)
+local n=${#arr[*]}
+
+for (( i = n-1; i >= 0; i-- ))
+do
+    echo -n "${arr[i]} "
+done
+
+}
+
+------------------------------------------------------------
+
+
+disply() {
+
+
+local arr=($1)
+echo ${arr[*]}
+
+}
+
+-------------------------------------------------------------
 
 
 ####################################

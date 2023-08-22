@@ -90,7 +90,7 @@ function input_series()
 		input_series_series=()
 		read -p "Enter a series (atleast 3 positive numbers separated by spaces): " input_series
 		input_series_series+=${input_series}
-		
+		echo "`validate_series input_series_series`"
 		if [[ "`validate_series input_series_series`" == false ]]; then
 			echo "Error : invalid series" >> /dev/stderr
 		else

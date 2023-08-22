@@ -6,18 +6,23 @@
 #validation
 
 
-validate_series(){
-
-	local a="$1"
+function validate_series()
+{
+	local MIN_SERIES_SIZE=3
+	local -n a="$1"
 	local result=true
 	local ret_status=0
 	local int_re="^[+]?([1-9][0-9]*|0)$"
 
-    for (( i=0; i< ${#a[@]}; i++ )) do
-        if [[ ! "${a[i]}" =~ $int_re ]]; then
-    	    result=false
-    	fi
-    done
+	if [[ "${#a[@]}" -lt "$MIN_SERIES_SIZE" ]]; then
+		result=false
+	else
+		for (( i=0 ; i < ${#a[@]} && result == true; i++ )) do
+			if [[ ! "${a[i]}" =~ $int_re ]]; then
+			    result=false
+			fi
+		done
+	fi
 		    
 	echo "$result"
 	    
@@ -25,21 +30,19 @@ validate_series(){
 
 
 #--------------------------------------------------------------
-sort_series() {
-
-    local arr=$1
-    echo "${arr[*]}" | sort
+function sort_series()
+{
+    local -n arr="$1"
+    echo "${arr[@]}" | tr " " "\n" | sort -n | tr "\n" " "
 }
 
 #------------------------------------------------------------
 
 
-disply() {
-
-
-local arr=$1
-echo ${arr[*]}
-
+function display()
+{
+	local -n arr="$1"
+	echo ${arr[*]}
 }
 
 #-------------------------------------------------------------
@@ -49,21 +52,22 @@ echo ${arr[*]}
 ###########↓saw↓###########
 function average()
 {
-	local num_arr=$1
+	local -n num_arr="$1"
 	local ret_status=0
 	for number in "${num_arr[@]}"; do
    	 	sum=$((sum + number))
 	done
 	
 	(( avg = $sum / ${#num_arr[@]}))
-		echo "The average is : $avg"
+	echo "The average is : $avg"
+	
 	return $ret_status
 }
 
 
 function series_sum()
 {
-	local num_arr=$1
+	local -n num_arr="$1"
 	local ret_status=0	
 	
 	for number in "${num_arr[@]}"; do
@@ -89,12 +93,10 @@ function input_series()
 	while [[ "$valid_series" == false ]]; do
 		input_series_series=()
 		read -p "Enter a series (atleast 3 positive numbers separated by spaces): " input_series
-		input_series_series+=${input_series}
-		echo "`validate_series input_series_series`"
-		if [[ "`validate_series input_series_series`" == false ]]; then
+		input_series_series+=(${input_series[@]})
+		valid_series=$(validate_series input_series_series)
+		if [[ "$valid_series" == false ]]; then
 			echo "Error : invalid series" >> /dev/stderr
-		else
-			valid_series=true
 		fi
 	done
 	
@@ -105,12 +107,13 @@ function get_series()
 {
 	local -n get_series_series="$1"		# avoid circular name reference (don't give the series the same name sent)
 	local ret_status=0
+	local val_result=false
 	
 	if [[ "${#get_series_series[@]}" -eq 0 ]]; then
 		input_series get_series_series
 	fi
-		
-	if [[ "`validate_series input_series_series`" == false ]]; then
+
+	if [[ "`validate_series get_series_series`" == false ]]; then
 		echo "Error : invalid series" >> /dev/stderr
 		input_series get_series_series
 	fi
@@ -121,9 +124,9 @@ function get_series()
 function series_length()
 {
 	local ret_status=0
-	local series_length_series="$1"		# avoid circular name reference (don't give the series the same name sent)
+	local -n series_length_series="$1"		# avoid circular name reference (don't give the series the same name sent)
 	
-	echo "The series length is: ${#get_series_series[@]}"
+	echo "The series length is: ${#series_length_series[@]}"
 	
 	return $ret_status
 }
@@ -133,26 +136,30 @@ function series_length()
  function max()
  {
  
-	 local arr=$1
-	 local max=${arr[0]}
+	 local -n arr="$1"
+	 local max_val=${arr[0]}
 	 
 	 for n in "${arr[@]}" ; do
-		 ((n > max)) && max=$n
+	 	if [[ "$n" -gt "$max_val" ]]; then
+			max_val=$n
+		fi
 	 done
 	 
-	 echo $max
+	 echo "The maximum value is: $max_val"
 }
 		 
 function min()
 {
-	local arr=($1)
-	local min=${arr[0]}
+	local -n arr="$1"
+	local min_val=${arr[0]}
 	
-	for n in "{arr[@]}"; do
-		(( n > min )) && min=$n
+	for n in "${arr[@]}" ; do
+		if [[ "$n" -lt "$min_val" ]]; then
+			min_val=$n
+		fi
 	done 
 	
-	echo $min
+	echo "The minimum value is: $min_val"
 }
 
 
@@ -175,13 +182,12 @@ function menu()
 	
 	# get the array via input / sent parameters
 	get_series series
-	echo "${series[@]}"
 	
 	while [[ "$keep_running_flag" == true ]]; do
 		# menu presentation
 		echo "Choose an item:"
 		for (( i=0 ; i < ${#operations[@]} ; i++ )) do
-			echo -e "\t$(($i + 1))) ${operations[i]}"
+			echo -e "\t$(($i + 1))) ${options[i]}"
 		done
 		
 		# menu choice

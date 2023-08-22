@@ -90,16 +90,19 @@ function input_series()
 	local -n input_series_series="$1"	# avoid circular name reference (don't give the series the same name sent)
 	local input_series=()
 	local ret_status=0
+	local valid_series=false
 	
-	input_series_series=()
-	read -p "Enter a series (atleast 3 positive numbers separated by spaces): " input_series
-	input_series_series+=${input_series}
-	
-	# TODO: validate series - validate_series
-	# if validation not good change return status - validate_series series
-	if [[ "" ]]; then
-		echo -n ""
-	fi
+	while [[ "$valid_series" == false ]]; do
+		input_series_series=()
+		read -p "Enter a series (atleast 3 positive numbers separated by spaces): " input_series
+		input_series_series+=${input_series}
+		
+		if [[ "`validate_series input_series_series`" == false ]]; then
+			echo "Error : invalid series" >> /dev/stderr
+		else
+			valid_series=true
+		fi
+	done
 	
 	return $ret_status
 }
@@ -113,10 +116,9 @@ function get_series()
 		input_series get_series_series
 	fi
 		
-	# TODO: validate series - validate_series
-	# if validation not good change return status - validate_series series
-	if [[ "" ]]; then
-		echo -n ""
+	if [[ "`validate_series input_series_series`" == false ]]; then
+		echo "Error : invalid series" >> /dev/stderr
+		input_series get_series_series
 	fi
 	
 	return $ret_status
@@ -125,7 +127,7 @@ function get_series()
 function series_length()
 {
 	local ret_status=0
-	local series_length_series="$1"	# avoid circular name reference (don't give the series the same name sent)
+	local series_length_series="$1"		# avoid circular name reference (don't give the series the same name sent)
 	
 	echo "The series length is: ${#get_series_series[@]}"
 	
@@ -151,7 +153,7 @@ function menu()
 	
 	local options=("Input a Series" "Display series" "Display sorted series" "Display max value of series" "Display min value of series" "Display average value of series" "Display number of elements in the series" "Display series' sum")
 	local options+=("$exit_option")
-	local operations=("input_series" "display_series" "sorted_series" "series_max_val" "series_min_val" "series_avg_val" "num_of_elements" "siries_sum")
+	local operations=("input_series" "display" "sort_series" "max" "min" "average" "series_length" "series_sum")
 	local operations+=('exit')
 	
 	# get the array via input / sent parameters

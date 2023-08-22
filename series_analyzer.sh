@@ -13,10 +13,11 @@ validate_series(){
 	local ret_status=0
 	local int_re="^[+]?([1-9][0-9]*|0)$"
 
-		   
-	if [[ ! "${a[@]}" =~ $int_re ]]; then
-	    result=false
-	fi
+    for (( i=0; i<= ${#a[@]}; i++ )) do
+        if [[ ! "${a[i]}" =~ $int_re ]]; then
+    	    result=false
+    	fi
+    done
 		    
 	echo "$result"
 	    

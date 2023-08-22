@@ -10,12 +10,14 @@ validate_series(){
 
 local a="$1"
 
-shift
-
 local b=${@}
+loacl c=$#
+
 local result=true
 local ret_status=0
 local int_re="^[+]?([1-9][0-9]*|0)$"
+
+for
 	    
 if [[ ! "${b[@]}" =~ $int_re || ! "${a[@]}" =~ $int_re ]]; then
     result=false
@@ -41,23 +43,6 @@ function get_array()
 	
 	return $ret_status
 }
-
-function main()
-{
-	local outside_arr=(${@})
-	get_array outside_arr
-	local ret_status="$?"
-	
-	echo "(${outside_arr[@]})" 
-	
-	exit "$ret_status"
-}
-
-
-# in case of running as a script
-if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-    main "${@}"
-fi
 
 
 

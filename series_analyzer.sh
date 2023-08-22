@@ -53,7 +53,33 @@ echo ${arr[*]}
 
 ####################################
 ###########↓saw↓###########
+function average()
+{
+	local num_arr=$1
+	local ret_status=0
+	for number in "${num_arr[@]}"; do
+   	 	sum=$((sum + number))
+	done
+	
+	(( avg = $sum / ${#num_arr[@]}))
+		echo "The average is : $avg"
+	return $ret_status
+}
 
+
+function series_sum()
+{
+	local num_arr=$1
+	local ret_status=0	
+	
+	for number in "${num_arr[@]}"; do
+   	 	sum=$((sum + number))
+	done
+	
+	echo "The sum is : $sum"
+	
+	return $ret_status
+}
 
 
 ####################################

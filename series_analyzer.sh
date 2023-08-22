@@ -136,7 +136,23 @@ function series_length()
 
 ####################################
 ###########↓inna↓###########
-
+ max() {
+ 
+ local arr=($1)
+ local max=${arr[0]}
+ 
+ for n in "$[arr[@]}" ; do
+ ((n > max)) && max=$n
+ done
+ echo $max
+ 
+ min() {
+ local arr=($1)
+ local min=${arr[0]}
+ for n in "{arr[@]}; do
+ ((n> min)) &&=$n
+ done 
+ echo $min
 
 
 ####################################

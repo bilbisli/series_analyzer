@@ -13,7 +13,52 @@
 ####################################
 ###########↓israel↓###########
 
+function input_series()
+{
+	local -n input_series_series="$1"	# avoid circular name reference (don't give the series the same name sent)
+	local input_series=()
+	local ret_status=0
+	
+	input_series_series=()
+	read -p "Enter a series (atleast 3 positive numbers separated by spaces): " input_series
+	input_series_series+=${input_series}
+	
+	# TODO: validate series - validate_series
+	# if validation not good change return status - validate_series series
+	if [[ "" ]]; then
+		echo -n ""
+	fi
+	
+	return $ret_status
+}
 
+function get_series()
+{
+	local -n get_series_series="$1"		# avoid circular name reference (don't give the series the same name sent)
+	local ret_status=0
+	
+	if [[ "${#get_series_series[@]}" -eq 0 ]]; then
+		input_series get_series_series
+	fi
+		
+	# TODO: validate series - validate_series
+	# if validation not good change return status - validate_series series
+	if [[ "" ]]; then
+		echo -n ""
+	fi
+	
+	return $ret_status
+}
+
+function series_length()
+{
+	local ret_status=0
+	local series_length_series="$1"	# avoid circular name reference (don't give the series the same name sent)
+	
+	echo "The series length is: ${#get_series_series[@]}"
+	
+	return $ret_status
+}
 
 ####################################
 ###########↓inna↓###########
@@ -30,12 +75,16 @@ function menu()
 	local exit_option="Exit"
 	local ret_status=1							# successful return status (0) only when exit option is chosen from menu
 	local result=0
-	local array=()
+	local series=(${@})
 	
 	local options=("Input a Series" "Display series" "Display sorted series" "Display max value of series" "Display min value of series" "Display average value of series" "Display number of elements in the series" "Display series' sum")
 	local options+=("$exit_option")
-	local operations=("get_array" "display_series" "series_max_val" "series_min_val" "series_avg_val" "num_of_elements" "siries_sum")
+	local operations=("input_series" "display_series" "sorted_series" "series_max_val" "series_min_val" "series_avg_val" "num_of_elements" "siries_sum")
 	local operations+=('exit')
+	
+	# get the array via input / sent parameters
+	get_series series
+	echo "${series[@]}"
 	
 	while [[ "$keep_running_flag" == true ]]; do
 		# menu presentation
@@ -46,31 +95,15 @@ function menu()
 		
 		# menu choice
 		read -p "Choice: " choice
-		if [[ "$choice" == [1-${#simple_math_scripts[@]}] ]]; then
-			echo "Option chosen: ${operations[choice - 1]}"
-		
-			if [[ "${operations[choice - 1]}" == "$exit_option" ]]; then	# exit condition
+		if [[ "$choice" == [1-${#operations[@]}] ]]; then
+			echo "Option chosen: ${options[choice - 1]}"
+
+			if [[ "${options[choice - 1]}" == "$exit_option" ]]; then	# exit condition
 				keep_running_flag=false
 				ret_status=0						# successful return status (0)
-			else								# math operations
-				# operands input
-				read -p "Enter two operands for the ${operations[choice - 1]} opration: " operand1 operand2
+			else								# operations
 				# operands validation
-				result=$(is_bi_int_operands "$operand1" "$operand2")
-				if [[ "$?" -eq 0 && "$result" == true ]]; then
-					# math operation after input validation
-					result=$(${simple_math_scripts[choice - 1]} ${operand1} ${operand2})
-					if [[ "$?" -eq 0 ]]; then			# math operation success checkup
-						echo "The result is: $result"
-						# advanced math operations on result
-						for (( i=0 ; i < ${#advanced_math_scripts[@]} ; ++i )); do
-							advanced_result=$(${advanced_math_scripts[i]} ${result})
-							echo "${advanced_operations[i]}? $advanced_result"
-						done
-					fi
-				else
-					echo "Error : Invalid input - There must be exactly two integers as operands!" >> /dev/stderr
-				fi
+				${operations[choice - 1]} series
 			fi
 		else
 			echo "Error - no such option."  >> /dev/stderr
@@ -78,14 +111,13 @@ function menu()
 		echo -e "\n#################################################\n"
 	done
 	
-	
 	return $ret_status
 }
 
 
 function main()
 {
-	menu
+	menu "${@}"
 	local ret_status="$?"
 
 	exit "$ret_status"

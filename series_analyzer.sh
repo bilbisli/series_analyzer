@@ -7,7 +7,34 @@
 
 ####################################
 ###########↓saw↓###########
+function average()
+{
+	local a="$1"
+	local b="$2"
+	local c="$3"
+	local ret_status=0
+	local sum=$(($a+$b+$c))
+	(( avg = $sum / 3))
+	
+	
+	echo "The average is : $avg"
+	
+	return $ret_status
+}
 
+function sum_of_3()
+{
+	local a="$1"
+	local b="$2"
+	local c="$3"
+	local ret_status=0
+	local sum=$(($a+$b+$c))
+	
+	
+	echo "The sum is : $sum"
+	
+	return $ret_status
+}
 
 
 ####################################

@@ -8,42 +8,20 @@
 
 validate_series(){
 
-local a="$1"
-
-local b=${@}
-loacl c=$#
-
-local result=true
-local ret_status=0
-local int_re="^[+]?([1-9][0-9]*|0)$"
-
-for
-	    
-if [[ ! "${b[@]}" =~ $int_re || ! "${a[@]}" =~ $int_re ]]; then
-    result=false
-fi
-	    
-echo "$result"
-	    
-return $ret_status
-}
-
-
-function get_array()
-{
-	local -n arr="$1"
-	local input_arr=()
+	local a="$1"
+	local result=true
 	local ret_status=0
-	
-	if [[ "${#arr[@]}" -eq 0 ]]; then
-		read -p "Enter a series (atleast 3 positive numbers separated by spaces): " input_arr
-		arr+=${input_arr}
-	fi
-		
-	
-	return $ret_status
-}
+	local int_re="^[+]?([1-9][0-9]*|0)$"
 
+    for (( i=0; i<= ${#a[@]}; i++ )) do
+        if [[ ! "${a[i]}" =~ $int_re ]]; then
+    	    result=false
+    	fi
+    done
+		    
+	echo "$result"
+	    
+}
 
 
 --------------------------------------------------------------
